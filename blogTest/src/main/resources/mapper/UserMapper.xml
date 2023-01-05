@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.blogtest.mapper.UserMapper">
+    <resultMap id="map" type="com.example.blogtest.model.User">
+        <id column="id" property="id"></id>
+        <result column="username" property="userName"></result>
+        <result column="createtime" property="createTime"></result>
+        <result column="updatetime" property="updateTime"></result>
+    </resultMap>
+
+    <select id="selectById" resultMap="map">
+        select * from user where id = #{id}
+    </select>
+
+    <insert id="insert">
+        insert into user (id, username, password)
+        values (#{user.id}, #{user.userName}, #{user.password})
+    </insert>
+
+    <insert id="insertIfCondition">
+        insert into user (id, username, password
+            <if test="createtime != null">
+                , createtime
+            </if>
+        )
+        values (#{id}, #{username}, #{password}
+            <if test="createtime != null">
+                , #{createtime}
+            </if>
+        )
+    </insert>
+
+    <insert id="insertTrim">
+        insert into user
+            <!-- trim 中的 prefix 和 suffix 能分别对语句块增加相应的前缀和后缀 -->
+            <!-- 所以这里就直接省略括号了，通过这两个属性添加 -->
+            <!-- 我们为每个字段都加上一个逗号，然后使用 suffixOverrides 将最后的逗号去掉 -->
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                id,
+                <if test="username != null">
+                    username,
+                </if>
+                <if test="password != null">
+                    password,
+                </if>
+                <if test="createtime != null">
+                    createtime,
+                </if>
+                <if test="updatetime != null">
+                    updatetime,
+                </if>
+            </trim>
+        values
+            <!-- 这里和上面是一样的，需要注意需要使用 #{变量名} -->
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{id},
+                <if test="username != null">
+                    #{username},
+                </if>
+                <if test="password != null">
+                    #{password},
+                </if>
+                <if test="createtime != null">
+                    #{createtime},
+                </if>
+                <if test="updatetime != null">
+                    #{updatetime},
+                </if>
+            </trim>
+    </insert>
+
+    <select id="selectWhere" resultMap="map">
+        select * from user
+        <where>
+            <if test="id != null">
+                or id = #{id}
+            </if>
+            <if test="username != null">
+                and username = #{username}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateSet">
+        update user
+            <set>
+                <if test="username != null">
+                    username = #{username},
+                </if>
+                <if test="password != null">
+                    password = #{password},
+                </if>
+            </set>
+        where id = #{id};
+    </update>
+
+    <delete id="deleteForeach">
+        delete from user where id in
+            <foreach collection="collection" item="curId" open="(" close=")" separator=",">
+                #{curId}
+            </foreach>
+    </delete>
+</mapper>

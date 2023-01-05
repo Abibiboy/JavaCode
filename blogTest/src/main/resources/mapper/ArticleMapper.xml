@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.blogtest.mapper.ArticleMapper">  <!-- 这里填的是接口路径 -->
+    <select id="selectAll" resultType="com.example.blogtest.model.Article">  <!-- 这里填的是对象路径 -->
+        select * from article
+    </select>
+
+    <select id="selectById" resultType="com.example.blogtest.model.Article">
+        select * from article where id = #{newId}
+    </select>
+
+    <insert id="add">
+        insert into article (id, title, content, userid) values (#{id}, #{title}, #{content}, #{userid})
+    </insert>
+
+    <insert id="addAndGetId" useGeneratedKeys="true" keyProperty="id">
+        insert into article (id, title, content, userid)
+        values (#{id}, #{title}, #{content}, #{userid})
+    </insert>
+
+    <update id="updateContentById">
+        update article set content = #{content} where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from article where id = #{id}
+    </delete>
+
+    <select id="selectBySort" resultType="com.example.blogtest.model.Article">
+        select * from article order by visitcount ${rule}
+    </select>
+
+    <select id="selectByLike" resultType="com.example.blogtest.model.Article">
+        select * from article where title like concat("%", #{key}, "%")
+    </select>
+
+    <select id="selectByUserId" resultType="com.example.blogtest.model.Article">
+        select user.username, article.* from article join user on user.id = article.userid
+    </select>
+</mapper>
